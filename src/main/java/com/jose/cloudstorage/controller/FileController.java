@@ -28,9 +28,9 @@ public class FileController {
     }
 
     @GetMapping("/download-file/{id}")
-    public ResponseEntity<Resource> downloadFile(Authentication authentication, @PathVariable("fileId") Integer fileId) {
+    public ResponseEntity<Resource> downloadFile(Authentication authentication, @PathVariable("id") Integer id) {
         User user = userService.getUser(authentication.getPrincipal().toString());
-        File file = fileService.getById(fileId, user.getUserId());
+        File file = fileService.getById(id, user.getUserId());
 
         if (file != null) {
             HttpHeaders headers = new HttpHeaders();
