@@ -25,5 +25,5 @@ public interface NoteMapper {
     Integer update(@Param("note") Note note, Integer userId);
 
     @Delete("DELETE FROM NOTES WHERE noteid = #{id} AND userid = #{userId}")
-    Integer delete(Long id, Long userId);
+    Integer delete(Integer id, Integer userId);
 }
