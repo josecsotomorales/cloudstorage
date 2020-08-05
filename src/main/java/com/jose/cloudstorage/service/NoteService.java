@@ -2,9 +2,11 @@ package com.jose.cloudstorage.service;
 
 import com.jose.cloudstorage.mapper.NoteMapper;
 import com.jose.cloudstorage.model.Note;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class NoteService {
     private final NoteMapper noteMapper;
 

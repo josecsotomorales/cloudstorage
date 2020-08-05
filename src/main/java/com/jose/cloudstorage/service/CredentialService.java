@@ -2,12 +2,14 @@ package com.jose.cloudstorage.service;
 
 import com.jose.cloudstorage.mapper.CredentialMapper;
 import com.jose.cloudstorage.model.Credential;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+@Service
 public class CredentialService {
     private final CredentialMapper credentialMapper;
     private final EncryptionService encryptionService;

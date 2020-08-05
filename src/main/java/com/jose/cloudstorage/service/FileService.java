@@ -2,10 +2,12 @@ package com.jose.cloudstorage.service;
 
 import com.jose.cloudstorage.mapper.FileMapper;
 import com.jose.cloudstorage.model.File;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Service
 public class FileService {
     private final FileMapper fileMapper;
 
