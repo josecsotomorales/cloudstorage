@@ -6,6 +6,13 @@ public class File {
     private String fileSize;
     private byte[] fileData;
 
+    public File(Integer fileId, String contentType, String fileSize, byte[] fileData) {
+        this.fileId = fileId;
+        this.contentType = contentType;
+        this.fileSize = fileSize;
+        this.fileData = fileData;
+    }
+
     public Integer getFileId() {
         return fileId;
     }

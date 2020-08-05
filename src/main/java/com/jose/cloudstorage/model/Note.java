@@ -5,6 +5,12 @@ public class Note {
     private String noteTitle;
     private String noteDescription;
 
+    public Note(Integer noteId, String noteTitle, String noteDescription) {
+        this.noteId = noteId;
+        this.noteTitle = noteTitle;
+        this.noteDescription = noteDescription;
+    }
+
     public Integer getNoteId() {
         return noteId;
     }
