@@ -38,10 +38,10 @@ public class NoteController {
         return "redirect:/result?success";
     }
 
-    @GetMapping(value = "/delete-note/{noteId}")
-    public String deleteNote(Authentication authentication, @PathVariable("noteId") Integer noteId) {
+    @GetMapping(value = "/delete-note/{id}")
+    public String deleteNote(Authentication authentication, @PathVariable("id") Integer id) {
         User user = userService.getUser(authentication.getPrincipal().toString());
-        boolean result = noteService.delete(noteId, user.getUserId());
+        boolean result = noteService.delete(id, user.getUserId());
 
         if (!result) {
             return "redirect:/result?error";

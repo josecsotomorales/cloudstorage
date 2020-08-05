@@ -40,9 +40,9 @@ public class CredentialController {
     }
 
     @GetMapping(value = "/delete-credential/{id}")
-    public String deleteCredential(Authentication authentication, @PathVariable("credentialId") Integer credentialId) {
+    public String deleteCredential(Authentication authentication, @PathVariable("id") Integer id) {
         User user = userService.getUser(authentication.getPrincipal().toString());
-        boolean result = credentialService.delete(credentialId, user.getUserId());
+        boolean result = credentialService.delete(id, user.getUserId());
 
         if (!result) {
             return "redirect:/result?error";

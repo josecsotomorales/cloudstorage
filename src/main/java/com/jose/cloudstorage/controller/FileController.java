@@ -69,9 +69,9 @@ public class FileController {
     }
 
     @GetMapping(value = "/delete-file/{id}")
-    public String deleteFile(Authentication authentication, @PathVariable("fileId") Integer fileId) {
+    public String deleteFile(Authentication authentication, @PathVariable("id") Integer id) {
         User user = userService.getUser(authentication.getPrincipal().toString());
-        boolean result = fileService.deleteFile(fileId, user.getUserId());
+        boolean result = fileService.deleteFile(id, user.getUserId());
 
         if (!result) {
             return "redirect:/result?error";

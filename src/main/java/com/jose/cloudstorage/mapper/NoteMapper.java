@@ -18,6 +18,7 @@ public interface NoteMapper {
 
     @Insert("INSERT INTO NOTES (notetitle, notedescription, userid) " +
             "VALUES (#{note.noteTitle}, #{note.noteDescription}, #{userId})")
+    @Options(useGeneratedKeys = true, keyProperty = "note.noteId")
     Integer insert(@Param("note") Note note, Integer userId);
 
     @Update("UPDATE NOTES SET notetitle = #{note.noteTitle}, notedescription = #{note.noteDescription} " +
