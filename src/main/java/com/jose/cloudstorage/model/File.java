@@ -2,16 +2,21 @@ package com.jose.cloudstorage.model;
 
 public class File {
     private Integer fileId;
+    private String fileName;
     private String contentType;
     private String fileSize;
     private byte[] fileData;
 
-    public File(Integer fileId, String contentType, String fileSize, byte[] fileData) {
-        this.fileId = fileId;
+    public File(String fileName, String contentType, String fileSize, byte[] fileData) {
+        this.fileName = fileName;
         this.contentType = contentType;
         this.fileSize = fileSize;
         this.fileData = fileData;
     }
+
+    public String getFileName() { return fileName; }
+
+    public void setFileName(String fileName) { this.fileName = fileName; }
 
     public Integer getFileId() {
         return fileId;
