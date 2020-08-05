@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.util.ObjectUtils;
@@ -19,12 +20,17 @@ class CloudStorageApplicationTests {
 	private int port;
 
 	private WebDriver driver;
+	private WebDriverWait wait;
 
 	// Inputs
 	private String firstName = "Jose";
 	private String lastName = "Soto";
 	private String username = "josesoto";
 	private String password = "123456";
+
+	public void sleep() throws InterruptedException {
+		Thread.sleep(2000);
+	}
 
 	@BeforeAll
 	static void beforeAll() {
@@ -34,6 +40,7 @@ class CloudStorageApplicationTests {
 	@BeforeEach
 	public void beforeEach() {
 		this.driver = new ChromeDriver();
+		this.wait = new WebDriverWait(driver, 4000);
 	}
 
 	@AfterEach
@@ -73,8 +80,7 @@ class CloudStorageApplicationTests {
 		driver.findElement(By.id("inputLastName")).sendKeys(lastName);
 		driver.findElement(By.id("inputUsername")).sendKeys(username);
 		driver.findElement(By.id("inputPassword")).sendKeys(password);
-		Thread.sleep(4000);
-		driver.findElement(By.id("submit-button")).click();
+		wait.until(webDriver -> webDriver.findElement(By.id("submit-button"))).click();
 
 		// redirect to login page
 		driver.get("http://localhost:" + this.port + "/login");
@@ -82,14 +88,15 @@ class CloudStorageApplicationTests {
 		// login
 		driver.findElement(By.id("inputUsername")).sendKeys(username);
 		driver.findElement(By.id("inputPassword")).sendKeys(password);
-		driver.findElement(By.id("submit-button")).click();
-		Thread.sleep(4000);
+		wait.until(webDriver -> webDriver.findElement(By.id("submit-button"))).click();
 
 		// check if user has successfully logged in
 		Assertions.assertEquals("Home", driver.getTitle());
 
 		// check logout
-		driver.findElement(By.id("buttonLogout")).click();
+		wait.until(webDriver -> webDriver.findElement(By.id("buttonLogout"))).click();
+
+		sleep();
 
 		// check if user was successfully logged out
 		Assertions.assertEquals("Login", driver.getTitle());
@@ -104,8 +111,7 @@ class CloudStorageApplicationTests {
 		driver.findElement(By.id("inputLastName")).sendKeys(lastName);
 		driver.findElement(By.id("inputUsername")).sendKeys(username);
 		driver.findElement(By.id("inputPassword")).sendKeys(password);
-		Thread.sleep(4000);
-		driver.findElement(By.id("submit-button")).click();
+		wait.until(webDriver -> webDriver.findElement(By.id("submit-button"))).click();
 
 		// redirect to login page
 		driver.get("http://localhost:" + this.port + "/login");
@@ -113,8 +119,9 @@ class CloudStorageApplicationTests {
 		// login
 		driver.findElement(By.id("inputUsername")).sendKeys(username);
 		driver.findElement(By.id("inputPassword")).sendKeys(password);
-		driver.findElement(By.id("submit-button")).click();
-		Thread.sleep(4000);
+		wait.until(webDriver -> webDriver.findElement(By.id("submit-button"))).click();
+
+		sleep();
 
 		// check if user has successfully logged in
 		Assertions.assertEquals("Home", driver.getTitle());
@@ -127,80 +134,81 @@ class CloudStorageApplicationTests {
 		testSignupLogin();
 
 		// go to notes tab
-		driver.findElement(By.id("nav-notes-tab")).click();
-		Thread.sleep(4000);
+		wait.until(webDriver -> webDriver.findElement(By.id("nav-notes-tab"))).click();
 
 		// create a new note
 		boolean noteCreated = false;
 		try {
-			driver.findElement(By.id("buttonAddNewNote")).click();
-			Thread.sleep(4000);
+			sleep();
+			wait.until(webDriver -> webDriver.findElement(By.id("buttonAddNewNote"))).click();
+			sleep();
 			driver.findElement(By.id("note-title")).sendKeys("test-note-title");
 			driver.findElement(By.id("note-description")).sendKeys("test-note-description");
-			driver.findElement(By.id("saveNoteButton")).click();
-			Thread.sleep(4000);
+			wait.until(webDriver -> webDriver.findElement(By.id("saveNoteButton"))).click();
 			noteCreated = true;
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 
 		// go to notes tab
-		driver.findElement(By.linkText("here")).click();
-		driver.findElement(By.id("nav-notes-tab")).click();
-		Thread.sleep(4000);
+		driver.get("http://localhost:" + this.port + "/home");
+		sleep();
+		wait.until(webDriver -> webDriver.findElement(By.id("nav-notes-tab"))).click();
 
 		// create another note
 		try {
-			driver.findElement(By.id("buttonAddNewNote")).click();
-			Thread.sleep(4000);
+			sleep();
+			wait.until(webDriver -> webDriver.findElement(By.id("buttonAddNewNote"))).click();
+			sleep();
 			driver.findElement(By.id("note-title")).sendKeys("test-note-title-2");
 			driver.findElement(By.id("note-description")).sendKeys("test-note-description-2");
-			driver.findElement(By.id("saveNoteButton")).click();
-			Thread.sleep(4000);
+			wait.until(webDriver -> webDriver.findElement(By.id("saveNoteButton"))).click();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 
 		// go to notes tab
-		driver.findElement(By.id("nav-notes-tab")).click();
-		Thread.sleep(4000);
+		driver.get("http://localhost:" + this.port + "/home");
+		sleep();
+		wait.until(webDriver -> webDriver.findElement(By.id("nav-notes-tab"))).click();
 
 		// delete a note
-		Thread.sleep(4000);
 		boolean noteDeleted = false;
-		WebElement notesTable = driver.findElement(By.id("userTable"));
+		WebElement notesTable = wait.until(webDriver -> webDriver.findElement(By.id("userTable")));
 		List<WebElement> noteLink = notesTable.findElements(By.tagName("a"));
 		for (WebElement deleteNoteButton : noteLink) {
+			sleep();
 			deleteNoteButton.click();
 			noteDeleted = true;
 			break;
 		}
 
 		// go to notes tab
-		Thread.sleep(4000);
-		driver.findElement(By.linkText("here")).click();
-		driver.findElement(By.id("nav-notes-tab")).click();
-		Thread.sleep(4000);
+		driver.get("http://localhost:" + this.port + "/home");
+		sleep();
+		wait.until(webDriver -> webDriver.findElement(By.id("nav-notes-tab"))).click();
 
 		// edit a note
-		Thread.sleep(4000);
-		notesTable = driver.findElement(By.id("userTable"));
+		notesTable = wait.until(webDriver -> webDriver.findElement(By.id("userTable")));
 		List<WebElement> noteList = notesTable.findElements(By.tagName("td"));
 		boolean noteEdited = false;
 		for (WebElement row : noteList) {
+			sleep();
 			WebElement editButton = null;
-			editButton = row.findElement(By.tagName("button"));
+			editButton = row.findElement(By.tagName("button"));;
 			editButton.click();
 			if (!ObjectUtils.isEmpty(editButton)) {
-				Thread.sleep(4000);
+				sleep();
 				driver.findElement(By.id("note-title")).sendKeys("-edited");
 				driver.findElement(By.id("note-description")).sendKeys("-edited");
-				driver.findElement(By.id("saveNoteButton")).click();
+				wait.until(webDriver -> webDriver.findElement(By.id("saveNoteButton"))).click();
 				noteEdited = true;
-				Assertions.assertEquals("Home", driver.getTitle());
 				break;
 			}
 		}
+
+		sleep();
+
 		Assertions.assertTrue(noteCreated);
 		Assertions.assertTrue(noteDeleted);
 		Assertions.assertTrue(noteEdited);
@@ -213,67 +221,84 @@ class CloudStorageApplicationTests {
 		testSignupLogin();
 
 		// go to credentials tab
-		driver.findElement(By.id("nav-credentials-tab")).click();
-		Thread.sleep(4000);
+		wait.until(webDriver -> webDriver.findElement(By.id("nav-credentials-tab"))).click();
 
 		// create a new credential
 		boolean credentialCreated = false;
 		try {
-			driver.findElement(By.id("new-credential")).click();
-			Thread.sleep(4000);
+			sleep();
+			wait.until(webDriver -> webDriver.findElement(By.id("buttonAddNewCredential"))).click();
+			sleep();
 			driver.findElement(By.id("credential-url")).sendKeys("http://www.google.com");
 			driver.findElement(By.id("credential-username")).sendKeys(username);
 			driver.findElement(By.id("credential-password")).sendKeys(password);
-			driver.findElement(By.id("credential-submit")).click();
-			Thread.sleep(4000);
+			wait.until(webDriver -> webDriver.findElement(By.id("saveCredentialButton"))).click();
 			credentialCreated = true;
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 
+		// go to credentials tab
+		driver.get("http://localhost:" + this.port + "/home");
+		sleep();
+		wait.until(webDriver -> webDriver.findElement(By.id("nav-credentials-tab"))).click();
+
 		try {
-			driver.findElement(By.id("new-credential")).click();
-			Thread.sleep(4000);
+			sleep();
+			wait.until(webDriver -> webDriver.findElement(By.id("buttonAddNewCredential"))).click();
+			sleep();
 			driver.findElement(By.id("credential-url")).sendKeys("http://www.gmail.com");
 			driver.findElement(By.id("credential-username")).sendKeys(username);
 			driver.findElement(By.id("credential-password")).sendKeys(password);
-			driver.findElement(By.id("credential-submit")).click();
-			Thread.sleep(4000);
+			wait.until(webDriver -> webDriver.findElement(By.id("saveCredentialButton"))).click();
+			credentialCreated = true;
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 
+		// go to credentials tab
+		driver.get("http://localhost:" + this.port + "/home");
+		sleep();
+		wait.until(webDriver -> webDriver.findElement(By.id("nav-credentials-tab"))).click();
+
 		// delete a credential
-		Thread.sleep(4000);
 		boolean credentialDeleted = false;
-		WebElement notesTable = driver.findElement(By.id("credentialTable"));
-		List<WebElement> noteLink = notesTable.findElements(By.tagName("a"));
+		WebElement credentialsTable = wait.until(webDriver -> webDriver.findElement(By.id("credentialTable")));
+		List<WebElement> noteLink = credentialsTable.findElements(By.tagName("a"));
 		for (WebElement deleteNoteButton : noteLink) {
+			sleep();
 			deleteNoteButton.click();
 			credentialDeleted = true;
 			break;
 		}
 
+		// go to credentials tab
+		driver.get("http://localhost:" + this.port + "/home");
+		sleep();
+		wait.until(webDriver -> webDriver.findElement(By.id("nav-credentials-tab"))).click();
+
 		// edit a credential
-		Thread.sleep(4000);
-		notesTable = driver.findElement(By.id("credentialTable"));
-		List<WebElement> noteList = notesTable.findElements(By.tagName("td"));
+		credentialsTable = wait.until(webDriver -> webDriver.findElement(By.id("credentialTable")));
+		List<WebElement> credentialList = credentialsTable.findElements(By.tagName("td"));
 		boolean credentialEdited = false;
-		for (WebElement row : noteList) {
+		for (WebElement row : credentialList) {
+			sleep();
 			WebElement editButton = null;
-			editButton = row.findElement(By.tagName("button"));
+			editButton = row.findElement(By.tagName("button"));;
 			editButton.click();
 			if (!ObjectUtils.isEmpty(editButton)) {
-				Thread.sleep(4000);
+				sleep();
 				driver.findElement(By.id("credential-url")).sendKeys("http://www.google.com");
 				driver.findElement(By.id("credential-username")).sendKeys(username);
 				driver.findElement(By.id("credential-password")).sendKeys(username);
-				driver.findElement(By.id("credential-submit")).click();
+				wait.until(webDriver -> webDriver.findElement(By.id("saveCredentialButton"))).click();
 				credentialEdited = true;
-				Assertions.assertEquals("Home", driver.getTitle());
 				break;
 			}
 		}
+
+		sleep();
+
 		Assertions.assertTrue(credentialCreated);
 		Assertions.assertTrue(credentialDeleted);
 		Assertions.assertTrue(credentialEdited);
