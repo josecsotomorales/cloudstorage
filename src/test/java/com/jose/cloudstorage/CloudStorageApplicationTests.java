@@ -29,7 +29,7 @@ class CloudStorageApplicationTests {
 	private String password = "123456";
 
 	public void sleep() throws InterruptedException {
-		Thread.sleep(2000);
+		Thread.sleep(4000);
 	}
 
 	@BeforeAll
