@@ -8,6 +8,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.util.ObjectUtils;
+
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CloudStorageApplicationTests {
@@ -16,6 +19,12 @@ class CloudStorageApplicationTests {
 	private int port;
 
 	private WebDriver driver;
+
+	// Inputs
+	private String firstName = "Jose";
+	private String lastName = "Soto";
+	private String username = "josesoto";
+	private String password = "123456";
 
 	@BeforeAll
 	static void beforeAll() {
@@ -34,6 +43,7 @@ class CloudStorageApplicationTests {
 		}
 	}
 
+	// Test get login page
 	@Test
 	@Order(1)
 	public void getLoginPage() {
@@ -41,11 +51,204 @@ class CloudStorageApplicationTests {
 		Assertions.assertEquals("Login", driver.getTitle());
 	}
 
+	// Test get signup page
 	@Test
 	@Order(2)
 	public void getSignUpPage() {
 		driver.get("http://localhost:" + this.port + "/signup");
 		Assertions.assertEquals("Sign Up", driver.getTitle());
+	}
+
+	// Test unauthorized access
+	@Test
+	@Order(3)
+	public void getUnauthorizedLogin() {
+		driver.get("http://localhost:" + this.port + "/home");
+		Assertions.assertEquals("Login", driver.getTitle());
+	}
+
+	// Test signup, login and logout
+	@Test
+	@Order(4)
+	public void testSignupLogin() throws InterruptedException {
+		// sign up
+		driver.get("http://localhost:" + this.port + "/signup");
+		driver.findElement(By.id("inputFirstName")).sendKeys(firstName);
+		driver.findElement(By.id("inputLastName")).sendKeys(lastName);
+		driver.findElement(By.id("inputUsername")).sendKeys(username);
+		driver.findElement(By.id("inputPassword")).sendKeys(password);
+		Thread.sleep(4000);
+		driver.findElement(By.id("submit-button")).click();
+
+		// redirect to login page
+		driver.get("http://localhost:" + this.port + "/login");
+
+		// login
+		driver.findElement(By.id("inputUsername")).sendKeys(username);
+		driver.findElement(By.id("inputPassword")).sendKeys(password);
+		driver.findElement(By.id("submit-button")).click();
+		Thread.sleep(4000);
+
+		// check if user has successfully logged in
+		Assertions.assertEquals("Home", driver.getTitle());
+
+		// check logout
+		driver.findElement(By.id("buttonLogout")).click();
+
+		// check if user was successfully logged out
+		Assertions.assertEquals("Login", driver.getTitle());
+	}
+
+	// Test notes
+	@Test
+	@Order(5)
+	public void testNote() throws InterruptedException {
+		// login
+		driver.get("http://localhost:" + this.port + "/login");
+		driver.findElement(By.id("inputUsername")).sendKeys(username);
+		driver.findElement(By.id("inputPassword")).sendKeys(password);
+		driver.findElement(By.id("submit-button")).click();
+
+		// go to notes tab
+		driver.findElement(By.id("nav-notes-tab")).click();
+		Thread.sleep(4000);
+
+		// create a new note
+		boolean noteCreated = false;
+		try {
+			driver.findElement(By.id("new-note")).click();
+			Thread.sleep(4000);
+			driver.findElement(By.id("note-title")).sendKeys("test-note-title");
+			driver.findElement(By.id("note-description")).sendKeys("test-note-description");
+			driver.findElement(By.id("note-submit")).click();
+			Thread.sleep(4000);
+			noteCreated = true;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		// create another note
+		try {
+			driver.findElement(By.id("new-note")).click();
+			Thread.sleep(4000);
+			driver.findElement(By.id("note-title")).sendKeys("test-note-title-2");
+			driver.findElement(By.id("note-description")).sendKeys("test-note-description-2");
+			driver.findElement(By.id("note-submit")).click();
+			Thread.sleep(4000);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		// delete a note
+		Thread.sleep(4000);
+		boolean noteDeleted = false;
+		WebElement notesTable = driver.findElement(By.id("userTable"));
+		List<WebElement> noteLink = notesTable.findElements(By.tagName("a"));
+		for (WebElement deleteNoteButton : noteLink) {
+			deleteNoteButton.click();
+			noteDeleted = true;
+			break;
+		}
+
+		// edit a note
+		Thread.sleep(4000);
+		notesTable = driver.findElement(By.id("userTable"));
+		List<WebElement> noteList = notesTable.findElements(By.tagName("td"));
+		boolean noteEdited = false;
+		for (WebElement row : noteList) {
+			WebElement editButton = null;
+			editButton = row.findElement(By.tagName("button"));
+			editButton.click();
+			if (!ObjectUtils.isEmpty(editButton)) {
+				Thread.sleep(4000);
+				driver.findElement(By.id("note-title")).sendKeys("-edited");
+				driver.findElement(By.id("note-description")).sendKeys("-edited");
+				driver.findElement(By.id("note-submit")).click();
+				noteEdited = true;
+				Assertions.assertEquals("Home", driver.getTitle());
+				break;
+			}
+		}
+		Assertions.assertTrue(noteCreated);
+		Assertions.assertTrue(noteDeleted);
+		Assertions.assertTrue(noteEdited);
+	}
+
+	// test credentials
+	@Test
+	@Order(6)
+	public void testCredentials() throws InterruptedException {
+		// login
+		driver.get("http://localhost:" + this.port + "/login");
+		driver.findElement(By.id("inputUsername")).sendKeys(username);
+		driver.findElement(By.id("inputPassword")).sendKeys(password);
+		driver.findElement(By.id("submit-button")).click();
+
+		// go to credentials tab
+		driver.findElement(By.id("nav-credentials-tab")).click();
+		Thread.sleep(4000);
+
+		// create a new credential
+		boolean credentialCreated = false;
+		try {
+			driver.findElement(By.id("new-credential")).click();
+			Thread.sleep(4000);
+			driver.findElement(By.id("credential-url")).sendKeys("http://www.google.com");
+			driver.findElement(By.id("credential-username")).sendKeys(username);
+			driver.findElement(By.id("credential-password")).sendKeys(password);
+			driver.findElement(By.id("credential-submit")).click();
+			Thread.sleep(4000);
+			credentialCreated = true;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			driver.findElement(By.id("new-credential")).click();
+			Thread.sleep(4000);
+			driver.findElement(By.id("credential-url")).sendKeys("http://www.gmail.com");
+			driver.findElement(By.id("credential-username")).sendKeys(username);
+			driver.findElement(By.id("credential-password")).sendKeys(password);
+			driver.findElement(By.id("credential-submit")).click();
+			Thread.sleep(4000);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		// delete a credential
+		Thread.sleep(4000);
+		boolean credentialDeleted = false;
+		WebElement notesTable = driver.findElement(By.id("credentialTable"));
+		List<WebElement> noteLink = notesTable.findElements(By.tagName("a"));
+		for (WebElement deleteNoteButton : noteLink) {
+			deleteNoteButton.click();
+			credentialDeleted = true;
+			break;
+		}
+
+		// edit a credential
+		Thread.sleep(4000);
+		notesTable = driver.findElement(By.id("credentialTable"));
+		List<WebElement> noteList = notesTable.findElements(By.tagName("td"));
+		boolean credentialEdited = false;
+		for (WebElement row : noteList) {
+			WebElement editButton = null;
+			editButton = row.findElement(By.tagName("button"));
+			editButton.click();
+			if (!ObjectUtils.isEmpty(editButton)) {
+				Thread.sleep(4000);
+				driver.findElement(By.id("credential-url")).sendKeys("http://www.google.com");
+				driver.findElement(By.id("credential-username")).sendKeys(username);
+				driver.findElement(By.id("credential-password")).sendKeys(username);
+				driver.findElement(By.id("credential-submit")).click();
+				credentialEdited = true;
+				Assertions.assertEquals("Home", driver.getTitle());
+				break;
+			}
+		}
+		Assertions.assertTrue(credentialCreated);
+		Assertions.assertTrue(credentialDeleted);
+		Assertions.assertTrue(credentialEdited);
 	}
 
 }
