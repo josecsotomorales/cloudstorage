@@ -21,4 +21,4 @@ jobs:
       with:
         java-version: 14
     - name: Build
-      run: mvn -B package --file pom.xml
+      run: mvn -B -Dmaven.test.skip=true package --file pom.xml
