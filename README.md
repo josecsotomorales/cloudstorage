@@ -1,3 +1,4 @@
+![](https://github.com/josecsotomorales/cloudstorage/workflows/main/badge.svg)
 # Cloud Storage
 Spring Boot MVC App
 
